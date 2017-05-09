@@ -1,0 +1,12 @@
+- name: Install packages used for deployment
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - python-pip
+    - libpq-dev
+
+- name: Install python packages used for deployment
+  pip:
+    name: "{{ item }}"
+  with_items:
+    - psycopg2

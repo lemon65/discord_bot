@@ -1,0 +1,30 @@
+- name: Install postgres
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - postgresql
+
+- name: Create database
+  postgresql_db:
+    name: "{{ secrets.db.dbname }}"
+  become_user: postgres
+
+- name: Create database user
+  postgresql_user:
+    db: "{{ secrets.db.dbname }}"
+    name: "{{ secrets.db.username }}"
+    password: "{{ secrets.db.password }}"
+    priv: "ALL"
+  become_user: postgres
+
+- name: Add pg_trgm extension to support indexes for LIKE operator
+  postgresql_ext:
+    name: pg_trgm
+    db: "{{ secrets.db.dbname }}"
+  become_user: postgres
+
+- name: enable and start postgres service
+  service:
+    name: postgresql
+    state: started
+    enabled: yes

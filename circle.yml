@@ -1,0 +1,19 @@
+machine:
+  post:
+    - pyenv global 2.7.11 3.5.2
+
+dependencies:
+  override:
+    - pip install ansible==2.2.0.0
+    - pip install -e git+https://github.com/rce/dopy.git@monitoring#egg=dopy
+    - pip install tox==2.5.0
+
+test:
+  override:
+    - ./test.sh
+
+deployment:
+  production:
+    branch: master
+    commands:
+      - ./deploy.sh

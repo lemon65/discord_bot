@@ -1,0 +1,26 @@
+- name: Install required packages
+  apt: name={{ item }}
+  with_items:
+    - postgresql
+    - python-psycopg2
+
+- name: Configure postgresql
+  copy: src=files/{{ item }} dest=/etc/postgresql/9.5/main/{{ item }} group=postgres owner=postgres
+  with_items:
+    - postgresql.conf
+    - pg_hba.conf
+
+- name: Create database
+  postgresql_db: name=lemon
+  become_user: postgres
+
+- name: Create database user
+  postgresql_user: db=lemon name=lemon password=lemon priv=ALL
+  become_user: postgres
+
+- name: Add pg_trgm extension to support indexes for LIKE operator
+  postgresql_ext: name=pg_trgm db=lemon
+  become_user: postgres
+
+- name: Enable and start postgres service
+  service: name=postgresql state=restarted enabled=yes

@@ -1,0 +1,10 @@
+BingTranslator==0.1
+aioredis==0.3.0
+bs4==0.0.1
+cleverbot==2.0.0
+discord.py==0.15.1
+feedparser==5.2.1
+wolframalpha==3.0
+parsedatetime==2.2
+pytz==2016.10
+asyncpg==0.8.4
