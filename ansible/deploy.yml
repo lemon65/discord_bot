@@ -1,0 +1,41 @@
+- name: Create server
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    droplet_name: lemon-bot
+    droplet_size: 512mb # 512 MB RAM, 20 GB SSD, 1 core
+    droplet_region: fra1 # Frankfurt 1
+    droplet_image: ubuntu-16-04-x64
+    ssh_key_name: lemon-bot
+
+  tasks:
+    - name: Add SSH key to DigitalOcean
+      digital_ocean:
+        api_token: "{{ secrets.digital_ocean_api_token }}"
+        command: ssh
+        name: "{{ ssh_key_name }}"
+        ssh_pub_key: "{{ ssh_key.public }}"
+      register: do_ssh_key
+
+    - name: Create droplet
+      digital_ocean:
+        api_token: "{{ secrets.digital_ocean_api_token }}"
+        command: droplet
+        name: "{{ droplet_name }}"
+        unique_name: yes
+        size_id: "{{ droplet_size }}"
+        region_id: "{{ droplet_region }}"
+        image_id: "{{ droplet_image }}"
+        ssh_key_ids: "{{ do_ssh_key.ssh_key.id }}"
+        monitoring: yes
+        backups_enabled: yes
+      register: droplet
+
+    - name: Add new droplet to host group
+      add_host:
+        hostname: "{{ droplet.droplet.ip_address }}"
+        groupname: server
+      changed_when: False
+
+- include: provision.yml

@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+DIR="$(readlink -f "$(dirname "${BASH_SOURCE[0]}")")"
+echo $DIR
+
+export NVM_DIR=$DIR/.nvm
+source $DIR/nvm.sh
+nvm install
+node "$@"

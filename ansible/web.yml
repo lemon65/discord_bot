@@ -1,0 +1,35 @@
+- name: Install required packages for web
+  apt:
+    name: "{{ item }}"
+  with_items:
+    - nginx
+
+- name: Configure nginx
+  template:
+    src: templates/nginx.conf.j2
+    dest: "/etc/nginx/sites-available/default"
+  notify:
+    - reload nginx config
+
+- name: Copy web source to server
+  synchronize:
+    src: ../web
+    dest: "/home/{{ app_name }}"
+    delete: yes
+  notify:
+    - restart web service
+
+- name: Create service
+  template:
+    src: templates/web.service.j2
+    dest: "/etc/systemd/system/{{ app_name }}-web.service"
+  notify:
+    - reload unit files
+    - restart web service
+
+- name: enable and start service
+  service:
+    name: "{{ app_name }}-web"
+    state: started
+    enabled: yes
+

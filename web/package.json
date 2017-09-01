@@ -1,0 +1,30 @@
+{
+  "name": "web",
+  "scripts": {
+    "build-client": "browserify --entry client.js > .generated/bundle.js",
+    "start": "babel-node server.js"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
+  },
+  "babel": {
+    "presets": [
+      "react"
+    ]
+  },
+  "dependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-react": "^6.16.0",
+    "babelify": "^7.3.0",
+    "bluebird": "^3.4.7",
+    "browserify": "^13.1.1",
+    "express": "^4.14.0",
+    "pg-promise": "^5.5.0",
+    "react": "^15.4.1",
+    "react-dom": "^15.4.1",
+    "moment": "^2.18.1",
+    "moment-timezone": "^0.5.11"
+  }
+}

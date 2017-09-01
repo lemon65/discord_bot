@@ -1,0 +1,23 @@
+[Unit]
+Description=Fallback message archiver
+After=network.target
+
+[Service]
+Type=simple
+Restart=on-success
+User={{ app_name }}
+Group={{ app_name }}
+ExecStart=/usr/bin/python3 -u /home/{{ app_name }}/src/archiver.py
+WorkingDirectory=/home/{{ app_name }}
+Environment=LEMONBOT_TOKEN={{ secrets.discord_token }}
+Environment=WOLFRAM_ALPHA_APPID={{ secrets.wolfram_alpha_appid }}
+Environment=OPEN_WEATHER_APPID={{ secrets.open_weather_appid }}
+Environment=BING_CLIENTID={{ secrets.bing.clientid }}
+Environment=BING_SECRET={{ secrets.bing.secret }}
+Environment=OSU_API_KEY={{ secrets.osu_api_key }}
+Environment=DATABASE_NAME={{ secrets.db.dbname }}
+Environment=DATABASE_USERNAME={{ secrets.db.username }}
+Environment=DATABASE_PASSWORD={{ secrets.db.password }}
+Environment=REDIS_HOST=localhost
+Environment=REDIS_PORT={{ secrets.redis.port }}
+Environment=ERROR_CHANNEL_WEBHOOK={{ secrets.error_channel_webhook }}

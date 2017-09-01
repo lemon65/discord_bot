@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e
+DIR="$(dirname "${BASH_SOURCE[0]}")"
+
+export NVM_DIR=$DIR/.nvm
+source $DIR/nvm.sh
+nvm install
+npm "$@"

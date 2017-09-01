@@ -1,0 +1,10 @@
+- name: Install redis
+  apt: name=redis-server
+
+- name: Configure redis
+  template: src=files/{{ item }} dest=/etc/redis/{{ item }} group=redis owner=redis
+  with_items:
+    - redis.conf
+
+- name: Enable and start redis service
+  service: name=redis-server state=restarted enabled=yes

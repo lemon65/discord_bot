@@ -1,0 +1,7 @@
+- name: Configure local services
+  hosts: all
+  become: yes
+
+  tasks:
+    - include: postgres.yml
+    - include: redis.yml

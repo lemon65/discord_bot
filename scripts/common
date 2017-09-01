@@ -1,0 +1,71 @@
+#!/bin/sh
+
+set -e
+export ROOT=$(readlink -f "$(dirname "${BASH_SOURCE[0]}")/..")
+
+function ssh_vm {
+  cd $ROOT/local-services
+
+  tmp=$(mktemp -t lemon.XXXXX)
+  vagrant ssh-config > $tmp
+  host="$(grep "^Host " $tmp | cut -d' ' -f2)"
+  ssh -t -F "$tmp" "$host" -- "$@"
+  rm -f "$tmp"
+
+  cd -
+}
+
+function check_dependencies {
+  echo "+ Checking dependencies"
+
+  # TODO: Visual C++ build tools
+  # http://landinghub.visualstudio.com/visual-cpp-build-tools
+
+  if ! type python &> /dev/null; then
+    if ! type python3 &> /dev/null; then
+      echo "- Please install python"
+      exit 1
+    fi
+  fi
+
+  if ! type pip &> /dev/null; then
+    echo "- Pelase install pip"
+    exit 1
+  fi
+
+  if ! type virtualenv &> /dev/null; then
+    echo "+ Installing virtualenv"
+    pip install virtualenv > /dev/null
+  fi
+}
+
+function start_vm {
+  echo "+ Starting virtual machine"
+  pushd "$ROOT/local-services"
+  vagrant up
+  popd
+}
+
+function init_virtualenv {
+  echo "+ Initializing virtualenv"
+
+  if [ ! -d .venv ]; then
+    if type python3 &> /dev/null; then
+      virtualenv --python=python3 "$ROOT/.venv" > /dev/null
+    else
+      virtualenv "$ROOT/.venv" > /dev/null
+    fi
+  fi
+
+  if [ -f "$ROOT/.venv/Scripts/activate" ]; then
+    source "$ROOT/.venv/Scripts/activate"
+  elif [ -f "$ROOT/.venv/bin/activate" ]; then
+    source "$ROOT/.venv/bin/activate"
+  fi
+
+  pip install -r "$ROOT/src/requirements.txt"
+}
+
+function syntax_check {
+  find "$ROOT/src" -name "*.py" | xargs python -m py_compile
+}
